@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<canvas id="gameCanvas" width="800" height="600"></canvas>
+
+
+<script>
+   
+    var canvas;
+    var canvasContext;
+    var ballX = 50;
+    var ballY = 50;
+    var ballXLeft = 50;
+    var ballYUp = 50;
+    var tennisRocket = 10;
+    var rocketHeight = 0;
+    var paddleY = 250;
+    var paddleX = 0;
+    var paddleHeight = 50;
+    var score = 0;
+    var scoring;
+    var scoringContext;
+
+   
+
+    function calculateMousePos(evt) {
+        var rect = canvas.getBoundingClientRect();
+        var root = document.documentElement;
+        var mouseX = evt.clientX - rect.left - root.scrollLeft;
+        var mouseY = evt.clientY - rect.top - root.scrollTop;
+
+
+        return {
+            x: mouseX,
+            y: mouseY
+        }
+    }
+
+    window.onload = function () {
+        console.log("heheheh");
+     //   scoring = document.getElementById('gameScoring');
+      //  scoringContext = scoring.getContext('2d');
+       
+        canvas = document.getElementById('gameCanvas'); 
+        canvasContext = canvas.getContext('2d'); 
+        var FPS = 30;
+        setInterval(drawCanvas, 100 / FPS);
+      //  setInterval(drawScore, 100 / FPS);
+        canvas.addEventListener('mousemove',
+            function (evt) {
+                var mousePos = calculateMousePos(evt);
+
+                paddleY = mousePos.y;
+
+            
+            })
+
+    }
+
+    function resetTheBall() {
+
+        if (ballX == 0) {
+            if (paddleY > ballY || paddleY + 50 < ballY) {
+
+                score = 0;
+                ballX = canvas.width / 2;
+                ballY = canvas.height / 2;
+                ballXLeft = canvas.width / 2;
+                ballYUp = canvas.height / 2;
+            } else {
+                //add the score
+                score += 1;
+            }
+        }
+
+
+    }
+
+    function drawCanvas() {
+        ballXLeft = ballXLeft + 1;
+
+        //ball x coordinates
+        if (ballXLeft < canvas.width - 10) {
+            ballX = ballX + 1;
+        } else if ((ballXLeft >= canvas.width - 10) && (ballXLeft < (2 * (canvas.width - 10)))) {
+            ballX = ballX - 1;
+        } else {
+            ballXLeft = 0;
+            ballX = ballX + 1;
+        }
+        //ball y coordinates
+        ballYUp = ballYUp + 1;
+        if (ballYUp < canvas.height - 10) {
+            ballY = ballY + 1;
+        } else if ((ballYUp >= canvas.height - 10) && (ballYUp < (2 * (canvas.height - 10)))) {
+            ballY = ballY - 1;
+        } else {
+            ballYUp = 0;
+            ballY = ballY + 1;
+        }
+
+        console.log(ballX);
+        canvasContext.fillStyle = 'black';
+        canvasContext.fillRect(0, 0, canvas.width, canvas.height);
+
+        //middle of the field
+        for (var i = 10; i < canvas.height; i += 50) {
+            canvasContext.fillStyle = 'white';
+            canvasContext.fillRect(399, i, 2, 30);
+        }
+
+        //draw a ball
+        canvasContext.fillStyle = 'blue';
+        canvasContext.beginPath();
+        canvasContext.arc(ballX + 4, ballY + 4, 8, 0, Math.PI * 2, true);
+        canvasContext.fill();
+
+
+        //right rocket y coordinates      
+
+        if (ballY <= 25) {
+            rocketHeight = 0;
+        }
+        else if (ballY <= (canvas.height - 25)) {
+            rocketHeight = ballY - 25;
+        } else {
+            rocketHeight = (canvas.height - 50);
+        }
+        //draw right rocket
+        canvasContext.fillStyle = 'blue';
+        canvasContext.fillRect(canvas.width - 10, rocketHeight, 10, 50);
+        //draw left rocket
+        canvasContext.fillStyle = 'blue';
+        canvasContext.fillRect(0, paddleY - 25, 10, 50);
+
+        //reset the ball
+        resetTheBall();
+        
+        //showing score
+        canvasContext.fillStyle = 'white';
+        canvasContext.fillText("score: ", 100, 80);
+        canvasContext.fillText(score, 100, 100);
+ 
+    }
+ 
+    
+</script>
+
+</html>
